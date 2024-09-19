@@ -22,6 +22,9 @@ contract OrderBasedSwap {
   error AddressZeroDetected();
   error YouCantDepositZeroAmount();
   error InsufficientBalance();
+  error NoAmountDeposited();
+  error InvalidOrderId();
+  error TokenNotAccepted();
 
   event OrderOpenedSuccessfully(uint256 counter, uint256 _amountDeposited);
   event OrderDisplayedSuccessfully(uint256 orderId);
@@ -71,6 +74,24 @@ contract OrderBasedSwap {
   }
 
   function swapOrder(uint256 orderId) external {
+    if(usersOrders[msg.sender].amountDeposited == 0){
+      revert NoAmountDeposited();
+    }
+    if(allOrders[orderId].amountDeposited == 0){
+      revert InvalidOrderId();
+    }
+    Orders storage ord = allOrders[orderId];
+
+    if(IERC20(msg.sender) != ord.tokenWanted){
+      revert TokenNotAccepted();
+    }
+    
+    if(ord.tokenWanted.balanceOf(msg.sender) < ord.amountWanted){
+      revert InsufficientBalance();
+    }
+
+    ord.tokenWanted.transferFrom(msg.sender, address(this), ord.amountWanted);
+
 
   }
 
