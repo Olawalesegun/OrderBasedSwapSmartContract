@@ -68,8 +68,6 @@ contract OrderBasedSwap {
 
   function displayOrderInfo(uint256 orderId) external view returns(Orders memory) {
     return allOrders[orderId];
-
-    emit OrderDisplayedSuccessfully(orderId);
   }
 
   function swapOrder(uint256 orderId) external {
